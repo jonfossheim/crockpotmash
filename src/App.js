@@ -1,25 +1,60 @@
-import logo from './logo.svg';
-import './App.css';
+import { Routes, Route, Link } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { login, logout } from './store/auth/authSlice';
+import Class from './pages/Class';
+import Home from './pages/Home';
+import Favs from './pages/Favs';
 
-function App() {
+const App = () => {
+  const auth = useSelector((state) => state.auth.auth);
+  const dispatch = useDispatch();
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <nav>
+        <ul>
+          <li>
+            <Link to='/'>Home</Link>
+          </li>
+          <li>
+            <Link to='/favs'>Favs</Link>
+          </li>
+        </ul>
+        {auth ? (
+          <button
+            onClick={() => {
+              dispatch(logout());
+            }}
+          >
+            Logout
+          </button>
+        ) : null}
+      </nav>
+      <Routes>
+        {auth ? (
+          <Route index element={<Home />} />
+        ) : (
+          <Route
+            index
+            element={
+              <div>
+                <h1>You are not logged in, please do so</h1>
+                <button
+                  onClick={() => {
+                    dispatch(login({ pword: 'supersecure' }));
+                  }}
+                >
+                  Login
+                </button>
+              </div>
+            }
+          />
+        )}
+
+        <Route path='/class/:id' element={<Class />} />
+        <Route path='/favs' element={<Favs />} />
+      </Routes>
+    </>
   );
-}
+};
 
 export default App;
